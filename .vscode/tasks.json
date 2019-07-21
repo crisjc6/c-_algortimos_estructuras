@@ -9,7 +9,7 @@
             "command": "g++",
             "args": [
                 "-g",
-                "manejoarchivo proyecto final"
+                "main.cpp"
             ],
             "group": {
                 "kind": "build",

@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <windows.h>
 #include <conio.h>
 #include <string.h>
 #include "stdio.h"
