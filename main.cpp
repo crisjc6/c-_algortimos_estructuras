@@ -89,6 +89,8 @@ int main()
                         cout.flush();
                         system("cls");
                         cout << "\n Ingreso de Inventarios\n";
+                        cout.flush();
+                        guardaDatosProd(produc);
                         system("pause");
                         break;
                     case 2:
