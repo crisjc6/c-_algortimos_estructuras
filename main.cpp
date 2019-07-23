@@ -6,6 +6,9 @@
 #include <conio.h>
 #include <string.h>
 #include "stdio.h"
+#include <ctime>
+#include <sstream>
+#include <cstdlib>
 using namespace std;
 struct Datos
 {
@@ -47,24 +50,37 @@ struct Producto
 
 struct Entrada
 {
-    char cod_p[5];
-    char nom_prod[20];
+    char factura_n[5];
+    char cod_prod[20];
     char descrip[20];
-    float costo, pvp;
     int cantidad;
-    Fecha fec_comp;
+    Fecha fechaEntrada;
 
-} produc;
+} entrada;
+
+
+struct Salida
+{
+    char factura_n[5];
+    char fecha_entrada[20];
+    char cod_prod[20];
+    char descrip[20];
+    int cantidad;
+    Fecha fechaEntrada;
+
+} salida;
 
 int menuGeneral();
 int menu2();
 int menu3();
+int numeroFactura =0;
 void leerPasw(char frase[]);
 void listarProductos();
 void guardarDatos(Datos dat);
 void guardarDatosCli(Cliente cli);
 void guardaDatosProd(Producto prod);
 int verificaUsuario(string nombre, string clave);
+string getDate();
 int main()
 {
 
@@ -335,12 +351,14 @@ void guardarDatosCli(Cliente cli)
     }
     archivo.close();
 }
-// lo que esta para cliente sera �para proveedor
+// lo que esta para cliente sera ?para proveedor
 
 void guardaDatosProd(Producto prod)
 {
     fstream archivo;
+    
     //deben cambiar por los datos que tiene la estrcutura producto
+     cout << getDate() << "\n";
     archivo.open("producto.txt", ios::app);
     if (archivo.fail())
     {
@@ -361,6 +379,22 @@ void guardaDatosProd(Producto prod)
         archivo << prod.nom_prod << " ";
         archivo << prod.cantidad << " ";
         archivo << prod.costo << endl;
+    }
+    archivo.close();
+    archivo.open("entrada.txt", ios::app);
+    if (archivo.fail())
+    {
+        cout << "Error, no se pudo abrir archivo" << endl;
+        exit(1);
+    }
+    else
+    {	
+        archivo << ++numeroFactura << " ";
+		archivo << getDate() << " ";
+        archivo << prod.cod_p << " ";
+        archivo << prod.cantidad << " ";
+        archivo << prod.descrip << " ";        
+        archivo << prod.cantidad << endl;
     }
     archivo.close();
 }
@@ -435,4 +469,47 @@ void listarSalidas()
             cout << "==========================================" << endl;
         }
     }
+}
+string getDate()
+{
+    time_t t = time(NULL);
+	tm* timePtr = localtime(&t);
+
+    stringstream ss_year;
+    ss_year << timePtr->tm_year+1900;
+    string Year = ss_year.str();
+
+    stringstream ss_month;
+    ss_month << timePtr->tm_mon+1;
+    string Month = ss_month.str();
+    if(atoi(Month.c_str()) < 10)
+        Month = "0"+Month;
+
+    stringstream ss_day;
+    ss_day << timePtr->tm_mday;
+    string Day = ss_day.str();
+    if(atoi(Day.c_str()) < 10)
+        Day = "0"+Day;
+
+    stringstream ss_hour;
+    ss_hour << timePtr->tm_hour;
+    string Hour = ss_hour.str();
+    if(atoi(Hour.c_str()) < 10)
+        Hour = "0"+Hour;
+
+    stringstream ss_min;
+    ss_min << timePtr->tm_min;
+    string Min = ss_min.str();
+    if(atoi(Min.c_str()) < 10)
+        Min = "0"+Min;
+
+    stringstream ss_sec;
+    ss_sec << timePtr->tm_sec;
+    string Sec = ss_sec.str();
+    if(atoi(Sec.c_str()) < 10)
+        Sec = "0"+Sec;
+
+    string Fecha = Year+Month+Day+"_"+Hour+Min+Sec;
+
+    return Fecha;
 }
