@@ -80,6 +80,7 @@ void listarSalidas();
 void guardarDatos(Datos dat);
 void guardarDatosCli(Cliente cli);
 void guardaDatosProd(Producto prod);
+void guardarVenta(Producto prod);
 int verificaUsuario(string nombre, string clave);
 string getDate();
 int main()
@@ -168,6 +169,7 @@ int main()
                         system("cls");
                         cout << "\n Generar Venta \n";
                         listarProductos();
+                        guardarVenta(produc);
                         system("pause");
                         break;
                     case 3:
@@ -384,6 +386,10 @@ void guardaDatosProd(Producto prod)
         cin >> prod.cantidad;
         cout << "  Ingrese el costo $:  ";
         cin >> prod.costo;
+        cout << "==========================================" << endl;
+        cout << "  Subtotal a pagar: " << prod.cantidad*prod.costo << "\n";
+        cout << "           Iva 12%: " << prod.cantidad*prod.costo*0.12 << "\n";
+        cout << "     Total a pagar: " << prod.cantidad*prod.costo*1.12 << "\n";
         archivoProductos << prod.cod_p << " ";
         archivoProductos << prod.nom_prod << " ";
         archivoProductos << prod.cantidad << " ";
@@ -422,7 +428,10 @@ void guardarVenta(Producto prod)
         cin >> prod.cantidad;
         cout << "  Ingrese el costo $:  ";
         cin >> prod.costo;
-        cout << 
+        cout << "==========================================" << endl;
+        cout << "  Subtotal a cobrar: " << prod.cantidad*prod.costo << "\n";;
+        cout << "            Iva 12%: " << prod.cantidad*prod.costo*0.12 << "\n";;
+        cout << "     Total a cobrar: " << prod.cantidad*prod.costo*1.12 << "\n";;
         archivoProductos << prod.cod_p << " ";
         archivoProductos << prod.nom_prod << " ";
         archivoProductos << prod.cantidad << " ";
