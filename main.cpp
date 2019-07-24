@@ -39,7 +39,7 @@ struct Proveedor
 } prov;
 struct Producto
 {
-    char cod_p[5];
+    char cod_p[10];
     char nom_prod[20];
     char descrip[20];
     float costo, pvp;
@@ -50,14 +50,13 @@ struct Producto
 
 struct Entrada
 {
-    char factura_n[5];
+    char factura_n[10];
     char cod_prod[20];
     char descrip[20];
     int cantidad;
     Fecha fechaEntrada;
 
 } entrada;
-
 
 struct Salida
 {
@@ -73,9 +72,11 @@ struct Salida
 int menuGeneral();
 int menu2();
 int menu3();
-int numeroFactura =0;
+int numeroFactura = 0;
 void leerPasw(char frase[]);
 void listarProductos();
+void listarEntradas();
+void listarSalidas();
 void guardarDatos(Datos dat);
 void guardarDatosCli(Cliente cli);
 void guardaDatosProd(Producto prod);
@@ -131,7 +132,10 @@ int main()
                                 cout.flush();
                                 system("cls");
                                 cout << "\n Entradas\n";
-                                cout << "=========================================" << endl;
+                                cout << "========================================================" << endl;
+                                cout << "|ID|N°Factura |Fecha |Codigo|Descripcion|Cantidad|Costo|" << endl;
+                                cout << "========================================================" << endl;
+                                listarEntradas();
                                 system("pause");
                                 break;
                             case 3:
@@ -139,13 +143,16 @@ int main()
                                 system("cls");
                                 cout << "\n Salidas\n";
                                 cout << "=========================================" << endl;
+                                cout << "|ID|N°Factura |Fecha |Codigo|Descripcion|Cantidad|Costo|" << endl;
+                                cout << "========================================================" << endl;
+                                listarSalidas();
                                 system("pause");
                                 break;
                             case 4:
                                 cout.flush();
                                 system("cls");
                                 cout << "\n Comprar mercaderia\n";
-                                cout << "=========================================" << endl;
+                                cout << "========================================================" << endl;
                                 guardaDatosProd(produc);
                                 system("pause");
                                 break;
@@ -160,6 +167,7 @@ int main()
                         cout.flush();
                         system("cls");
                         cout << "\n Generar Venta \n";
+                        listarProductos();
                         system("pause");
                         break;
                     case 3:
@@ -355,12 +363,13 @@ void guardarDatosCli(Cliente cli)
 
 void guardaDatosProd(Producto prod)
 {
-    fstream archivo;
-    
+    fstream archivoProductos;
+    fstream archivoEntradas;
+
     //deben cambiar por los datos que tiene la estrcutura producto
-     cout << getDate() << "\n";
-    archivo.open("producto.txt", ios::app);
-    if (archivo.fail())
+    archivoProductos.open("producto.txt", ios::app);
+    archivoEntradas.open("entrada.txt", ios::app);
+    if (archivoProductos.fail() || archivoEntradas.fail() )
     {
         cout << "Error, no se pudo abrir archivo" << endl;
         exit(1);
@@ -375,28 +384,59 @@ void guardaDatosProd(Producto prod)
         cin >> prod.cantidad;
         cout << "  Ingrese el costo $:  ";
         cin >> prod.costo;
-        archivo << prod.cod_p << " ";
-        archivo << prod.nom_prod << " ";
-        archivo << prod.cantidad << " ";
-        archivo << prod.costo << endl;
+        archivoProductos << prod.cod_p << " ";
+        archivoProductos << prod.nom_prod << " ";
+        archivoProductos << prod.cantidad << " ";
+        archivoProductos << prod.costo << endl;
+
+        archivoEntradas << ++numeroFactura << " ";
+        archivoEntradas << getDate() << " ";
+        archivoEntradas << prod.cod_p << " ";
+        archivoEntradas << prod.nom_prod << " ";
+        archivoEntradas << prod.cantidad << " ";
+        archivoEntradas << prod.costo << endl;
     }
-    archivo.close();
-    archivo.open("entrada.txt", ios::app);
-    if (archivo.fail())
+    archivoProductos.close();
+    archivoEntradas.close();
+}
+void guardarVenta(Producto prod)
+{
+    fstream archivoProductos;
+    fstream archivoEntradas;
+
+    //deben cambiar por los datos que tiene la estrcutura producto
+    archivoProductos.open("producto.txt", ios::app);
+    archivoEntradas.open("salida.txt", ios::app);
+    if (archivoProductos.fail() || archivoEntradas.fail() )
     {
         cout << "Error, no se pudo abrir archivo" << endl;
         exit(1);
     }
     else
-    {	
-        archivo << ++numeroFactura << " ";
-		archivo << getDate() << " ";
-        archivo << prod.cod_p << " ";
-        archivo << prod.cantidad << " ";
-        archivo << prod.descrip << " ";        
-        archivo << prod.cantidad << endl;
+    {
+        cout << "  Ingrese el codigo del Producto:  ";
+        cin >> prod.cod_p;
+        cout << "  Ingrese el nombre del producto:  ";
+        cin >> prod.nom_prod;
+        cout << "  Ingrese la cantidad:  ";
+        cin >> prod.cantidad;
+        cout << "  Ingrese el costo $:  ";
+        cin >> prod.costo;
+        cout << 
+        archivoProductos << prod.cod_p << " ";
+        archivoProductos << prod.nom_prod << " ";
+        archivoProductos << prod.cantidad << " ";
+        archivoProductos << prod.costo << endl;
+
+        archivoEntradas << ++numeroFactura << " ";
+        archivoEntradas << getDate() << " ";
+        archivoEntradas << prod.cod_p << " ";
+        archivoEntradas << prod.nom_prod << " ";
+        archivoEntradas << prod.cantidad << " ";
+        archivoEntradas << prod.costo << endl;
     }
-    archivo.close();
+    archivoProductos.close();
+    archivoEntradas.close();
 }
 void listarProductos()
 {
@@ -442,7 +482,7 @@ void listarEntradas()
         {
             getline(archivo, producto);
             cout << ++contador << " " << producto << "\n";
-            cout << "==========================================" << endl;
+            cout << "==================================================" << endl;
         }
     }
 }
@@ -473,43 +513,43 @@ void listarSalidas()
 string getDate()
 {
     time_t t = time(NULL);
-	tm* timePtr = localtime(&t);
+    tm *timePtr = localtime(&t);
 
     stringstream ss_year;
-    ss_year << timePtr->tm_year+1900;
+    ss_year << timePtr->tm_year + 1900;
     string Year = ss_year.str();
 
     stringstream ss_month;
-    ss_month << timePtr->tm_mon+1;
+    ss_month << timePtr->tm_mon + 1;
     string Month = ss_month.str();
-    if(atoi(Month.c_str()) < 10)
-        Month = "0"+Month;
+    if (atoi(Month.c_str()) < 10)
+        Month = "0" + Month;
 
     stringstream ss_day;
     ss_day << timePtr->tm_mday;
     string Day = ss_day.str();
-    if(atoi(Day.c_str()) < 10)
-        Day = "0"+Day;
+    if (atoi(Day.c_str()) < 10)
+        Day = "0" + Day;
 
     stringstream ss_hour;
     ss_hour << timePtr->tm_hour;
     string Hour = ss_hour.str();
-    if(atoi(Hour.c_str()) < 10)
-        Hour = "0"+Hour;
+    if (atoi(Hour.c_str()) < 10)
+        Hour = "0" + Hour;
 
     stringstream ss_min;
     ss_min << timePtr->tm_min;
     string Min = ss_min.str();
-    if(atoi(Min.c_str()) < 10)
-        Min = "0"+Min;
+    if (atoi(Min.c_str()) < 10)
+        Min = "0" + Min;
 
     stringstream ss_sec;
     ss_sec << timePtr->tm_sec;
     string Sec = ss_sec.str();
-    if(atoi(Sec.c_str()) < 10)
-        Sec = "0"+Sec;
+    if (atoi(Sec.c_str()) < 10)
+        Sec = "0" + Sec;
 
-    string Fecha = Year+Month+Day+"_"+Hour+Min+Sec;
+    string Fecha = Year + "/" + Month + "/" + Day;
 
     return Fecha;
 }
