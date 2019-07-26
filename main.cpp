@@ -9,6 +9,7 @@
 #include <ctime>
 #include <sstream>
 #include <cstdlib>
+#include <cstring>
 using namespace std;
 struct Datos
 {
@@ -27,6 +28,7 @@ struct Cliente
     char cioruc[13];
     char tel[13];
     Fecha fech;
+    int factura;
 } cliente;
 struct Proveedor
 {
@@ -72,6 +74,7 @@ struct Salida
 int menuGeneral();
 int menu2();
 int menu3();
+int menu4();
 int numeroFactura = 0;
 void leerPasw(char frase[]);
 void listarProductos();
@@ -80,16 +83,19 @@ void listarSalidas();
 void guardarDatos(Datos dat);
 void guardarDatosCli(Cliente cli);
 void guardaDatosProd(Producto prod);
-void guardarVenta(Producto prod);
+void guardarVenta(Producto prod, Cliente cli);
 int verificaUsuario(string nombre, string clave);
+int verificarProducto(Producto prod, string clave);
+void listarProducto(Producto prod);
 string getDate();
 int main()
 {
 
     ifstream archivo;
     FILE *fi;
+    char su[5];
 
-    int op, op2, po3, op3;
+    int op, op2, po3, op3,op4;
     int us = 0;
     do
     {
@@ -124,42 +130,40 @@ int main()
                             case 1:
                                 cout.flush();
                                 system("cls");
-                                cout << "\n Lista de productos\n";
                                 cout << "========================" << endl;
-                                listarProductos();
+                                cout << "\n Agregar producto al inventario\n";
+                                cout << "========================" << endl;
+                                cout<<"\n Productos existentes \n";
+                                cout << "===============================-==========================" << endl;
+                                cout << "|codigo|nombre|descripcion|cantidad|costo|PVP|Año|mes|dia|" << endl; 
+                                cout << "==========================================================" << endl;
+                                listarProducto(produc);
+                                system("pause");
+                                guardaDatosProd(produc);
                                 system("pause");
                                 break;
                             case 2:
                                 cout.flush();
-                                system("cls");
-                                cout << "\n Entradas\n";
-                                cout << "========================================================" << endl;
-                                cout << "|ID|N°Factura |Fecha |Codigo|Descripcion|Cantidad|Costo|" << endl;
-                                cout << "========================================================" << endl;
-                                listarEntradas();
+
+                                cout << "2.- Eliminar producto " << endl;
+                                listarProducto(produc);
                                 system("pause");
+
                                 break;
                             case 3:
                                 cout.flush();
                                 system("cls");
-                                cout << "\n Salidas\n";
-                                cout << "=========================================" << endl;
-                                cout << "|ID|N°Factura |Fecha |Codigo|Descripcion|Cantidad|Costo|" << endl;
-                                cout << "========================================================" << endl;
-                                listarSalidas();
+                                cout << "3.- Actualizar producto " << endl;
+                                listarProducto(produc);
                                 system("pause");
                                 break;
-                            case 4:
+                            case 0:
                                 cout.flush();
-                                system("cls");
-                                cout << "\n Comprar mercaderia\n";
-                                cout << "========================================================" << endl;
-                                guardaDatosProd(produc);
+                                menu2();
                                 system("pause");
                                 break;
                             default:
-                                cout << "\n Opcion no existe \n"
-                                     << endl;
+                                cout << "\n Opcion no existe \n"<< endl;
                                 system("pause");
                             }
                         } while (op3 != 0);
@@ -169,15 +173,35 @@ int main()
                         system("cls");
                         cout << "\n Generar Venta \n";
                         listarProductos();
-                        guardarVenta(produc);
+                        guardarVenta(produc,cliente);
                         system("pause");
                         break;
                     case 3:
                         cout.flush();
                         system("cls");
                         cout << "\n Reportes ..... \n";
+                        op4=menu4();
+                        switch (op4){
+                            case 0:
+                                cout.flush();
+                                menu3();
+                                system("pause");
+                                break;
+                            case 1:
+                                system("pause");
+                                break;
+                         default:
+                                cout << "\n Opcion no existe \n"<< endl;
+                                system("pause");
+
+                        }
+
                         system("pause");
                         break;
+                    case 0:
+                        cout.flush();
+                        menuGeneral();
+
                     default:
                         cout << "\n Opcion no existe \n"
                              << endl;
@@ -192,7 +216,12 @@ int main()
         }
         case 2:
             cout.flush();
-            guardarDatos(cli);
+            cout<< "ingrese la clave de super usuario =";
+            leerPasw(su);
+            if (strcmp(su,"12345")==0)
+                guardarDatos(cli);
+            else
+                cout<<"Clave incorrecta de super usuario\n";
             system("pause");
             break;
         default:
@@ -203,17 +232,37 @@ int main()
     } while (op != 0);
 }
 
+int menu4()
+{
+    int op;
+    cout.flush();
+    system("cls");
+     cout << "\n " << endl;
+    cout << "==========================================" << endl;
+    cout << " REPORTES" << endl;
+    cout << "=========================================" << endl;
+    cout << "1.- REPORTE DE USUARIOS " << endl;
+    cout << "2.- REPORTE DE VENTAS " << endl;
+    cout << "3.- REPORTE DE PROVEEDORES " << endl;
+    cout << "4.- REPORTE DE VENTAS " << endl;
+    cout << "0.- Regresar Menu anterior " << endl;
+    cout << "========================" << endl;
+    cout << "Ingrese la opcion: ";
+    cin >> op;
+    return op;
+}
+
 int menu2()
 {
     int op;
     cout.flush();
     system("cls");
-    cout << "\n Bienvenido al sistema de COMPRAS Y VENTAS" << endl;
+     cout << "\n " << endl;
     cout << "==========================================" << endl;
-    cout << "              Menu 2                    " << endl;
+    cout << " Bienvenido al sistema de COMPRAS Y VENTAS" << endl;
     cout << "=========================================" << endl;
-    cout << "1.- Inventario " << endl;
-    cout << "2.- Venta " << endl;
+    cout << "1.- Ingresar Inventario " << endl;
+    cout << "2.- Generar Venta " << endl;
     cout << "3.- Reportes " << endl;
     cout << "0.- Regresar Menu anterior " << endl;
     cout << "========================" << endl;
@@ -227,14 +276,13 @@ int menu3()
     int op;
     cout.flush();
     system("cls");
-    cout << "\n Inventario del sistema de COMPRAS Y VENTAS" << endl;
+    cout << "\n " << endl;
     cout << "==========================================" << endl;
-    cout << "              Menu 3                    " << endl;
+    cout << "  Inventario del Sistema de COMPRAS Y VENTAS                 " << endl;
     cout << "=========================================" << endl;
-    cout << "1.- Lista de mercaderia disponible " << endl;
-    cout << "2.- Entradas " << endl;
-    cout << "3.- Salidas " << endl;
-    cout << "4.- Comprar mercaderia " << endl;
+    cout << "1.- Agregar producto " << endl;
+    cout << "2.- Elimar producto " << endl;
+    cout << "3.- Actualizar producto " << endl;
     cout << "0.- Regresar Menu anterior " << endl;
     cout << "========================" << endl;
     cout << "Ingrese la opcion: ";
@@ -348,15 +396,16 @@ void guardarDatosCli(Cliente cli)
     }
     else
     {
-        cout << "  Ingrese el codigo del Cliente:  ";
+        cout.flush();
+        cout << "  Ingrese el codigo del Clientes:  ";
         cin.getline(cli.cod_per, 4);
-        archivo << cli.cod_per << " ";
         cout << "  Ingrese el nombre del Cliente:  ";
         cin.getline(cli.nom_persona, 30);
-        archivo << cli.nom_persona << " ";
-        //aqui deben poner los datos del cliente dir,tel,ci o ruc
+       //aqui deben poner los datos del cliente dir,tel,ci o ruc
         cout << "  Ingrese la direccion del Cliente:  ";
         cin.getline(cli.dir, 30);
+         archivo << cli.nom_persona << " ";
+        archivo << cli.cod_per << " ";
         archivo << cli.dir << " ";
     }
     archivo.close();
@@ -368,9 +417,9 @@ void guardaDatosProd(Producto prod)
     fstream archivoProductos;
     fstream archivoEntradas;
 
-    //deben cambiar por los datos que tiene la estrcutura producto
+   //deben cambiar por los datos que tiene la estrcutura producto
     archivoProductos.open("producto.txt", ios::app);
-    archivoEntradas.open("entrada.txt", ios::app);
+    //archivoEntradas.open("entrada.txt", ios::app);
     if (archivoProductos.fail() || archivoEntradas.fail() )
     {
         cout << "Error, no se pudo abrir archivo" << endl;
@@ -378,75 +427,149 @@ void guardaDatosProd(Producto prod)
     }
     else
     {
+        system("cls");
+        cout.flush();
         cout << "  Ingrese el codigo del Producto:  ";
         cin >> prod.cod_p;
+        if(verificarProducto(produc,string(prod.cod_p))!=0){
+        system("pause");
+        }else{
+        cout.flush();    
         cout << "  Ingrese el nombre del producto:  ";
         cin >> prod.nom_prod;
-        cout << "  Ingrese la cantidad:  ";
+        cout.flush();
+        cout << "  Ingrese el descripcion del producto:  ";
+        cin >> prod.descrip;
+        cout.flush();
+        cout << "  Ingrese la cantidad a comprar:  ";
         cin >> prod.cantidad;
+        cout.flush();
         cout << "  Ingrese el costo $:  ";
         cin >> prod.costo;
-        cout << "==========================================" << endl;
-        cout << "  Subtotal a pagar: " << prod.cantidad*prod.costo << "\n";
-        cout << "           Iva 12%: " << prod.cantidad*prod.costo*0.12 << "\n";
-        cout << "     Total a pagar: " << prod.cantidad*prod.costo*1.12 << "\n";
+        cout.flush();
+        cout << "  Ingrese el PVP $:  ";
+        cin >> prod.pvp;
+        cout.flush();
+        cout << "  Ingrese anio:  ";
+        cin >>prod.fec_comp.anio;
+        cout.flush();
+        cout << "  Ingrese mes:  ";
+        cin >>prod.fec_comp.mes;
+        cout.flush();
+        cout << "  Ingrese dia:  ";
+        cin >>prod.fec_comp.dia;
+        cout.flush();
         archivoProductos << prod.cod_p << " ";
         archivoProductos << prod.nom_prod << " ";
+        archivoProductos << prod.descrip << " ";
         archivoProductos << prod.cantidad << " ";
-        archivoProductos << prod.costo << endl;
+        archivoProductos << prod.costo << " ";
+        archivoProductos << prod.pvp << " ";
+        archivoProductos << prod.fec_comp.anio << " ";
+        archivoProductos << prod.fec_comp.mes << " ";
+        archivoProductos << prod.fec_comp.dia <<endl;
+        cout<< "\n Datos gradados con exito \n";
+        };
 
-        archivoEntradas << ++numeroFactura << " ";
-        archivoEntradas << getDate() << " ";
-        archivoEntradas << prod.cod_p << " ";
-        archivoEntradas << prod.nom_prod << " ";
-        archivoEntradas << prod.cantidad << " ";
-        archivoEntradas << prod.costo << endl;
+
     }
     archivoProductos.close();
     archivoEntradas.close();
 }
-void guardarVenta(Producto prod)
+void guardarVenta(Producto prod, Cliente cli)
 {
+    char op;
+    int nfac=1;
+    double subtotal=0, iva, total;
     fstream archivoProductos;
-    fstream archivoEntradas;
+    fstream archivoCliente;
+    fstream archivoFactura;
 
     //deben cambiar por los datos que tiene la estrcutura producto
     archivoProductos.open("producto.txt", ios::app);
-    archivoEntradas.open("salida.txt", ios::app);
-    if (archivoProductos.fail() || archivoEntradas.fail() )
+    archivoFactura.open("factura.txt", ios::app);
+
+   // archivoEntradas.open("cliente.txt", ios::app);
+    if (archivoProductos.fail() || archivoFactura.fail() )
     {
         cout << "Error, no se pudo abrir archivo" << endl;
         exit(1);
     }
     else
     {
-        cout << "  Ingrese el codigo del Producto:  ";
-        cin >> prod.cod_p;
-        cout << "  Ingrese el nombre del producto:  ";
-        cin >> prod.nom_prod;
-        cout << "  Ingrese la cantidad:  ";
-        cin >> prod.cantidad;
-        cout << "  Ingrese el costo $:  ";
-        cin >> prod.costo;
-        cout << "==========================================" << endl;
-        cout << "  Subtotal a cobrar: " << prod.cantidad*prod.costo << "\n";;
-        cout << "            Iva 12%: " << prod.cantidad*prod.costo*0.12 << "\n";;
-        cout << "     Total a cobrar: " << prod.cantidad*prod.costo*1.12 << "\n";;
-        archivoProductos << prod.cod_p << " ";
-        archivoProductos << prod.nom_prod << " ";
-        archivoProductos << prod.cantidad << " ";
-        archivoProductos << prod.costo << endl;
+        //system("pause");
+            system("cls");
+            cout.flush();/*
+            cout << "  Ingrese Nombres del cliente :  ";
+            cin >> cli.nom_persona;
+            cout.flush();
+            cout << "  Ingrese Direccion :  ";
+            cin >> cli.dir;
+            cout.flush();
+            cout << "  Ingrese Ci o Ruc  :  ";
+            cin >> cli.cioruc;
+            cout.flush();
+            cout << "  Ingrese telefono :  ";
+            cin >> cli.tel;*/
+            guardarDatosCli(cli);
 
-        archivoEntradas << ++numeroFactura << " ";
-        archivoEntradas << getDate() << " ";
-        archivoEntradas << prod.cod_p << " ";
-        archivoEntradas << prod.nom_prod << " ";
-        archivoEntradas << prod.cantidad << " ";
-        archivoEntradas << prod.costo << endl;
+            archivoFactura << cli.factura<< " ";
+            archivoFactura << cli.nom_persona<< " ";
+            archivoFactura << cli.dir << " ";
+            archivoFactura << cli.tel << " ";
+
+            archivoCliente << cli.factura<< " ";
+            archivoCliente << cli.nom_persona<< " ";
+            archivoCliente << cli.dir << " ";
+            archivoCliente << cli.tel << " ";
+            cli.factura=nfac;
+        do{
+
+            cout.flush();
+            // agregar fecha getdate
+
+            cout << "\n Listado de Productos en Venta \n";
+            listarProducto(prod);
+            cout << "  Ingrese el codigo del Producto:  ";
+            cin >> prod.cod_p;
+            cout.flush();
+            cout << "  Ingrese la cantidad:  ";
+            cin >> prod.cantidad;
+            cout.flush();
+            cout << "  Ingrese el nombre del producto:  ";
+            cin >> prod.nom_prod;
+            cout.flush();
+
+            cout << "  Ingrese el PVP $:  ";   //deberas traer del sistema
+            cin >> prod.pvp;
+            cout.flush();
+
+
+            archivoFactura<< prod.cod_p << " ";
+            archivoFactura<< prod.cantidad << " ";
+            archivoFactura<< prod.nom_prod<< " ";
+            archivoFactura<< prod.pvp<< " ";
+            subtotal=subtotal+prod.pvp;
+
+             cout << "Desea ingresar otro producto s/n=  ";
+             cin>>op;
+        }while(op=='s');
+
+            cout << "==========================================" << endl;
+            iva=subtotal*0.12 ;
+            cout << "  Subtotal a cobrar: " << subtotal << "\n";;
+            cout << "            Iva 12%: " << iva << "\n";;
+            total=subtotal+iva;
+            cout << "     Total a cobrar: " << total << "\n";;
+            archivoFactura<< subtotal<< " ";
+            archivoFactura<< iva<< " ";
+            archivoFactura<< total<<endl;
     }
     archivoProductos.close();
-    archivoEntradas.close();
+    archivoCliente.close();
+    archivoFactura.close();
 }
+
 void listarProductos()
 {
     FILE *fi;
@@ -561,4 +684,111 @@ string getDate()
     string Fecha = Year + "/" + Month + "/" + Day;
 
     return Fecha;
+}
+
+void listarProducto(Producto prod){
+    ifstream archivo;
+
+    string frase;
+
+    archivo.open("producto.txt",ios::in); //Abrir el archivo en modo lectura
+    if(archivo.fail())
+    {
+        cout<<"No se pudo abrir el archivo"<<endl;
+        exit(1);
+    }else{
+       while(!archivo.eof()){
+            getline(archivo,frase);
+            cout<<frase<<endl;
+
+       }
+      //  system("pause");
+    }
+
+    archivo.close();
+}
+
+int verificarProducto(Producto prod,string codigo){
+    ifstream archivo;
+
+    char tab2[1024];
+    char *ptr;
+    string frase2;
+
+    archivo.open("producto.txt",ios::in); //Abrir el archivo en modo lectura
+    if(archivo.fail())
+    {
+        cout<<"No se pudo abrir el archivo"<<endl;
+        exit(1);
+    }else{
+       while(!archivo.eof()){
+
+            getline(archivo,frase2);
+            strcpy(tab2, frase2.c_str());
+            ptr = strtok(tab2," ");
+            if (strcmp(ptr, codigo.c_str()) == 0)
+            {
+                cout << "Este articulo ya existe" << endl;
+                cout << ptr << endl;
+                return 1;
+            }
+            else
+            {
+            continue;
+            }
+       }
+       return 0;
+      //  system("pause");
+    }
+}
+
+void ElimnarProducto(){
+    
+    char linea[1280];
+    int IncNums = 0;
+    string cadena1;
+    ifstream Lectura("Lectura.txt");
+    ofstream Escritura("Escritura.txt");
+    Lectura.getline(linea, 1280);
+    string p1;
+    vector<string> GuardaDatos(0);
+ 
+    while (!Lectura.eof()) {
+        p1 = linea[0];
+        cadena1 = linea[1];
+        IncNums++;
+ 
+        if (p1=="a"){
+            if (cadena1=="c"){
+                Escritura << linea << endl; // esta linea la guardo en un txt pero tambien es la que quiero eliminar del archivo original
+            }
+        }
+        else if (p1=="b"){
+            if (cadena1=="m"){
+                Escritura << linea << endl;// esta linea la guardo en un txt pero tambien es la que quiero eliminar del archivo original
+            }
+        }
+        else if (p1=="c"){
+            if (cadena1=="g"){
+                Escritura << linea << endl;// esta linea la guardo en un txt pero tambien es la que quiero eliminar del archivo original
+            }
+        }
+        else {
+            GuardaDatos.push_back(linea);
+        }
+        Lectura.getline(linea, 1280);
+    }
+ 
+    Escritura.close();
+    Lectura.close();
+ 
+    ofstream Escritura1("Lectura.txt");
+    int Nums1 = 0;
+    int TotalPals = GuardaDatos.size();
+ 
+    while (Nums1 < TotalPals) {
+        Escritura1 << GuardaDatos[Nums1] << endl;
+        Nums1++;
+    }
+    Escritura1.close();
 }
